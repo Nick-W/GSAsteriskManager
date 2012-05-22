@@ -142,6 +142,10 @@ namespace SFGSManager
                 {
                     RebootPhones();
                 }
+                else if ((Options & optionflags.VERSIONS) == optionflags.VERSIONS)
+                {
+                    ShowVersions();
+                }
                 else
                     ShowHelp("Error: No actions specified");
             }
@@ -154,6 +158,28 @@ namespace SFGSManager
             if (!PhoneList.Contains((Phone)Extension))
                 throw new Exception("Phone is no longer registered!");
             return PhoneList.First(p => p.Extension == Extension).IsActive;
+        }
+
+        private static void ShowVersions()
+        {
+            foreach (var phone in PhoneList)
+            {
+                //Reduce calls to asterisk
+                bool active = IsActive(phone.Extension);
+
+                if (((Options & optionflags.ONLYACTIVE) == optionflags.ONLYACTIVE) && !active)
+                    continue;
+                if (((Options & optionflags.NOACTIVE) == optionflags.NOACTIVE) && active)
+                    continue;
+                Console.Write(GetVersion(phone));
+            }
+        }
+
+        private static string GetVersion(Phone phone)
+        {
+            Process getPhones = Process.Start(new ProcessStartInfo("gsutil", String.Format("-e {0}", phone.IP)) { RedirectStandardOutput = true, UseShellExecute = false, RedirectStandardError = true });
+            getPhones.WaitForExit();
+            return getPhones.StandardOutput.ReadToEnd();
         }
 
         private static void ShowInfo()
