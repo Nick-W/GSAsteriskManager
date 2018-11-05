@@ -1,4 +1,4 @@
 GSAsteriskManager
 =================
 
-SparkFun GrandStream Asterisk Utility
+Simple CLI Asterisk wrapper for GrandStream phone mass-management
